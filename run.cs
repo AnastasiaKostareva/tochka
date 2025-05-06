@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 
 class HotelCapacity
@@ -48,24 +47,23 @@ class HotelCapacity
 
     static void Main()
     {
-        int maxCapacity = int.Parse(Console.ReadLine());
-        Console.ReadLine();
-        int n = int.Parse(Console.ReadLine());
+        var maxCapacity = int.Parse(Console.ReadLine());
+        var line = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(line))
+            line = Console.ReadLine();
 
-
-        List<Guest> guests = new List<Guest>();
+        var n = int.Parse(line);
+        var guests = new List<Guest>();
 
 
         for (int i = 0; i < n; i++)
         {
-            string line = Console.ReadLine();
-            Guest guest = ParseGuest(line);
+            var data = Console.ReadLine();
+            var guest = ParseGuest(data);
             guests.Add(guest);
         }
 
-
-        bool result = CheckCapacity(maxCapacity, guests);
-
+        var result = CheckCapacity(maxCapacity, guests);
 
         Console.WriteLine(result ? "True" : "False");
     }
@@ -75,18 +73,14 @@ class HotelCapacity
     {
         var guest = new Guest();
 
-        // Извлекаем имя
-        Match nameMatch = Regex.Match(json, "\"name\"\\s*:\\s*\"([^\"]+)\"");
+        var nameMatch = Regex.Match(json, @"""name""\s*:\s*""([^""]*)""");
+        var checkInMatch = Regex.Match(json, @"""check-in""\s*:\s*""([^""]*)""");
+        var checkOutMatch = Regex.Match(json, @"""check-out""\s*:\s*""([^""]*)""");
+
         if (nameMatch.Success)
             guest.Name = nameMatch.Groups[1].Value;
-
-        // Извлекаем дату заезда (исправлен check-in)
-        Match checkInMatch = Regex.Match(json, "\"check-in\"\\s*:\\s*\"([^\"]+)\"");
         if (checkInMatch.Success)
             guest.CheckIn = checkInMatch.Groups[1].Value;
-
-        // Извлекаем дату выезда (исправлен check-out)
-        Match checkOutMatch = Regex.Match(json, "\"check-out\"\\s*:\\s*\"([^\"]+)\"");
         if (checkOutMatch.Success)
             guest.CheckOut = checkOutMatch.Groups[1].Value;
 
